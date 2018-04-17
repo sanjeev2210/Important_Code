@@ -1,0 +1,54 @@
+/*
+Min. time to run marathon for a given distance in given time(x minutes + y sec)
+*/
+
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+
+ll min_time(vector<pair<ll,ll> > &v,ll ph,ll d)
+{
+	ll mnm=LONG_LONG_MAX;
+	for(int i1=0;i1<=d;i1++)
+	{
+		for(int i2=0;i2+i1<=d;i2++) // or--->  i2<=(d-i1);
+		{
+			for(int i3=0;i3+i2+i1<=d;i3++)  // or--->  i3<=(d-i1-i2);
+			{
+				for(int i4=0;i4+i3+i2+i1<=d;i4++)
+				{
+					int i5=d-i1-i2-i3-i4;
+					ll time=(i1*v[0].first)+(i2*v[1].first)+(i3*v[2].first)+(i4*v[3].first)+(i5*v[4].first);
+					ll phe=(i1*v[0].second)+(i2*v[1].second)+(i3*v[2].second)+(i4*v[3].second)+(i5*v[4].second);
+					if(phe<=ph)
+					{
+						if(time<mnm) mnm=time;
+					}
+				}
+			}
+		}
+	}
+	return mnm;
+}
+int main()
+{
+	int t,m,s,h,ph,dis;
+	cin>>t;
+	int test=1;
+	while(t--)
+	{
+		vector<pair<ll,ll> >v;
+		cin>>ph>>dis;
+		for(int i=0;i<5;i++)
+		{
+			cin>>m>>s>>h;
+			v.push_back(make_pair((m*60)+s,h));
+		}
+		ll res=min_time(v,ph,dis);
+		ll minute=res/60;
+		ll sec=res%60;
+		cout<<"#"<<test++<<" "<<minute<<" "<<sec<<endl;
+	}
+	return 0;
+}

@@ -1,0 +1,208 @@
+#include<bits/stdc++.h>
+using namespace std;
+ 
+struct st
+{
+	bool up,down,left,right,set;
+};
+ 
+struct Node
+{
+	int x,y;
+	struct Node *next;
+};
+ 
+int **a,**dist;
+struct st over[8];
+int n,m,r,c,l;
+int ans=0;
+//int front=-1,rear=-1;
+ 
+struct Node *create_node(int x,int y)
+{
+	struct Node *tmp=(struct Node*)malloc(sizeof(struct Node));
+    tmp->x=x;
+    tmp->y=y;
+    tmp->next=NULL;
+    return tmp;
+}
+void pop_q(struct Node **rt,struct Node **last)
+{
+	struct Node *tmp=*rt;
+	if(*last==*rt)
+		*last=NULL;
+	*rt=tmp->next;
+	tmp->next=NULL;   //breaking the link
+	free(tmp);
+}
+ 
+void push(struct Node **rt,struct Node **last,int x,int y)
+{
+  struct Node *tmp2=create_node(x,y);
+      			if(*rt==NULL)
+      			{
+      				*rt=tmp2;
+      				*last=tmp2;
+      			}
+      			else
+      			 {
+                   (*last)->next=tmp2;
+                   *last=tmp2;
+                 }
+}
+ 
+int pipe(int x,int y,int len)
+{
+	if(a[x][y]==0) return 0;
+	bool **vis=new bool*[n];
+	for(int i=0;i<n;i++)
+		vis[i]=new bool[m];
+	for(int i=0;i<n;i++)
+		for(int j=0;j<m;j++)
+			vis[i][j]=false;
+	//front=-1,rear=-1;
+	vis[x][y]=true;
+	dist[x][y]=1;
+    ans=1;     
+	struct Node *rt=NULL,*last=NULL;                      //create a linked list which will work as a queue in STL and write two functions front() and pop().
+    struct Node *tmp=create_node(x,y); 
+    push(&rt,&last,x,y);                                   //*last is used to insert at last in the queue....(rt---->root of queue)
+ 
+    while(rt!=NULL)
+    {
+    	//struct Node *tmp2=front_q(rt);
+    	x=rt->x;
+        y=rt->y;
+        pop_q(&rt,&last);
+       int num=a[x][y];
+ 
+       if(x-1>=0 && num!=0 && vis[x-1][y]==false && over[num].up==true && over[a[x-1][y]].down==true)
+       {
+       	dist[x-1][y]=dist[x][y]+1;
+       	if(dist[x-1][y]<=len)
+       	{
+       		push(&rt,&last,x-1,y);
+       		vis[x-1][y]=true; ans++;
+       	}
+       }
+       if(y+1<m && num!=0 && vis[x][y+1]==false && over[num].right==true && over[a[x][y+1]].left==true)
+       {
+       	dist[x][y+1]=dist[x][y]+1;
+       	if(dist[x][y+1]<=len)
+       	{
+       		push(&rt,&last,x,y+1);
+       		vis[x][y+1]=true; ans++;
+       	}
+       }
+       if(x+1<n && num!=0 && vis[x+1][y]==false && over[num].down==true && over[a[x+1][y]].up==true)
+       {
+       	dist[x+1][y]=dist[x][y]+1;
+       	if(dist[x+1][y]<=len)
+       	{
+       		push(&rt,&last,x+1,y);
+       		vis[x+1][y]=true; ans++;
+       	}
+       }
+       if(y-1>=0 && num!=0 && vis[x][y-1]==false && over[num].left==true && over[a[x][y-1]].right==true)
+       {
+       	dist[x][y-1]=dist[x][y]+1;
+       	if(dist[x][y-1]<=len)
+       	{
+       		push(&rt,&last,x,y-1);
+       		vis[x][y-1]=true; ans++;
+       	}
+       }
+    }
+ 
+    return ans;
+}
+ 
+int main()
+{
+	int t;
+	cin>>t;
+	int test=1;
+	while(t--)
+	{
+      cin>>n>>m>>r>>c>>l;
+      a=new int*[n];
+      for(int i=0;i<n;i++)
+      	a[i]=new int[m];
+      dist=new int*[n];
+      for(int i=0;i<n;i++)
+      	dist[i]=new int[m];
+      for(int i=0;i<8;i++)
+      	over[i].set=false;
+      for(int i=0;i<n;i++)
+      	{
+      		for(int j=0;j<m;j++)
+      		{
+      			cin>>a[i][j];
+      			int num=a[i][j];
+      			if(over[num].set!=true)
+      			{
+      				if(a[i][j]==1)
+      			   {
+                   over[1].up=true;
+                   over[1].down=true;
+                   over[1].left=true;
+                   over[1].right=true;
+                   over[1].set=true;
+      			   }
+      			   else if(a[i][j]==2)
+      			  {
+                   over[2].up=true;
+                   over[2].down=true;
+                   over[2].left=false;
+                   over[2].right=false;
+                   over[2].set=true;
+      			  }
+      			  else if(a[i][j]==3)
+      			  {
+                   over[3].up=false;
+                   over[3].down=false;
+                   over[3].left=true;
+                   over[3].right=true;
+                   over[3].set=true;
+      			  }
+      			  else if(a[i][j]==4)
+      			  {
+                   over[4].up=true;
+                   over[4].down=false;
+                   over[4].left=false;
+                   over[4].right=true;
+                   over[4].set=true;
+      			  }
+      			  else if(a[i][j]==5)
+      			   {
+                   over[5].up=false;
+                   over[5].down=true;
+                   over[5].left=false;
+                   over[5].right=true;
+                   over[5].set=true;
+      			   }
+      			   else if(a[i][j]==6)
+      			   {
+                   over[6].up=false;
+                   over[6].down=true;
+                   over[6].left=true;
+                   over[6].right=false;
+                   over[6].set=true;
+      			   }
+      			   else if(a[i][j]==7)
+      			   {
+                   over[7].up=true;
+                   over[7].down=false;
+                   over[7].left=true;
+                   over[7].right=false;
+                   over[7].set=true;
+      			   }
+      			}
+      		  }
+      		}
+      		ans=pipe(r,c,l);
+      		cout<<ans<<endl;
+      		//ans=1;
+      	}
+	return 0;
+}

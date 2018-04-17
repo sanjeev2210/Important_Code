@@ -1,0 +1,117 @@
+		                               //shubham arya
+		                               //NIT Patna
+                                   //warm holes....find minimum cost path
+#include <bits/stdc++.h>
+#define ll long long int
+#define mp make_pair
+#define pi pair<ll,ll>
+using namespace std;
+const ll inf=999999999;
+const ll MAX=10001;
+const ll MOD=1e9+7;
+int adj[MAX][MAX]={0};
+int n;
+
+struct pairs
+{
+	int ii;
+	int jj;
+};
+
+int mindistance(int *dist,bool *vis)
+{
+	int mnm=inf;
+	int m_index=-1;
+	for (int i = 0; i < n; ++i)
+	{
+		if(vis[i]==false && mnm>dist[i])
+		{
+			mnm=dist[i];
+			m_index=i;
+		}
+	}
+	return m_index;
+}
+
+void print(int *dist)
+{
+	cout<<"distances from src 0 to vertex:\n";
+	for (int i = 0; i < n; ++i)
+	{
+	  cout<<i<<" "<<dist[i]<<endl;	
+	}
+}
+int dijkstra(int src)
+{
+  int *dist=new int[n];
+  bool *vis=new bool[n];
+  for (int i = 0; i < n; ++i)
+  	{
+  		dist[i]=inf;
+  		vis[i]=false;
+  	}
+  	dist[src]=0;
+  	for (int i = 0; i < n-1; ++i)
+  		{
+  			int u=mindistance(dist,vis);
+  			vis[u]=true;
+  			for (int v = 0; v < n; ++v)
+  			{
+  				if(vis[v]==false && dist[u]!=inf && adj[u][v]!=0 && dist[u]+adj[u][v] < dist[v]) dist[v]=dist[u]+adj[u][v];
+  			}
+  		}
+  		print(dist);
+  		return dist[n-1];	
+}
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+     int x1,y1,x2,y2,wh,dist;
+     cin>>x1>>y1>>x2>>y2;
+     cin>>wh;
+     n=(2*wh)+2;
+     struct pairs *v=new struct pairs[n];
+     v[0].ii=x1;
+     v[0].jj=y1;
+     v[n-1].ii=x2;
+     v[n-1].jj=y2;
+
+     int count=1;
+     for (int i = 0; i < wh; ++i)
+     {
+     	cin>>x1>>y1>>x2>>y2>>dist;
+        v[count].ii=x1;
+        v[count].jj=y1;
+        count++;
+        v[count].ii=x2;
+        v[count].jj=y2;
+        adj[count][count-1]=dist;
+        adj[count-1][count]=dist;
+        count++;
+     }
+     for (int i = 0; i < n; ++i)
+     {
+     	int sx=v[i].ii;
+		  int sy=v[i].jj;
+     	for (int j = 0; j < n; ++j)
+     	{
+     		if(i==j)continue;
+     		else if(adj[i][j]==0)
+     		{
+     			int dx=v[j].ii;
+				int dy=v[j].jj;
+				int diff1= dx>sx ?dx-sx : sx-dx;
+				int diff2= dy>sy ?dy-sy : sy-dy;
+				int wt=diff1+diff2;
+				adj[i][j]=wt;
+     		}
+     	}
+     }
+     int res=dijkstra(0);
+     cout<<res<<endl;
+	}
+	return 0;
+}
